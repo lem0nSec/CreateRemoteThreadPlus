@@ -91,7 +91,16 @@ DWORD U32MessageBoxGenerateFunctionInstructions_End() { return 0; }
 <snip>
 ```
 
-MessageBoxA is manually declared as WINAPI ('#define __stdcall'). So this function will generate a specific instruction set which will populate all registers to make a MessageBoxA call in accordance with the __stdcall calling convention. The result is the following:
+MessageBoxA is manually declared as WINAPI ('#define __stdcall'). 0x4141414141414141 is just a dummy value that will be swapped with MessageBoxA address later in the code. This function will generate a specific instruction set which will populate all registers to make a MessageBoxA call in accordance with the __stdcall calling convention. The result is the following:
 
 
-![](pictures/function-instruction-set.png)
+![MessageBoxA instruction set](pictures/function_instruction_set.png)
+**Figure 1. MessageBoxA instruction set**
+
+
+![Remote thread executes MessageBoxA](pictures/payload_execution.png)
+**Figure 2. Remote thread executes MessageBoxA**
+
+
+## References
+* https://github.com/gentilkiwi/mimikatz
