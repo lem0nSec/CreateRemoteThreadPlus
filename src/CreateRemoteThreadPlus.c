@@ -26,6 +26,7 @@ PUSER32_LIB_INPUT_DATA U32MessageBoxCreateInputParameters(HANDLE hProcess, HWND 
 			if (!WriteProcessMemory(hProcess, lpCaptionAllocation, lpCaption, strlen(lpCaption), NULL))
 			{
 				VirtualFreeEx(hProcess, lpCaptionAllocation, strlen(lpCaption), MEM_DECOMMIT);
+				VirtualFreeEx(hProcess, lpTextAllocation, strlen(lpText), MEM_DECOMMIT);
 				return 0;
 			}
 		}
