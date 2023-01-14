@@ -63,8 +63,10 @@ The LPCSTR parameters are pointers to constant strings in the remote process. So
 
 ```c
 <snip>
+
 iData->text = (LPCSTR)lpTextAllocation;
 iData->title = (LPCSTR)lpCaptionAllocation;
+
 <snip>
 ```
 
