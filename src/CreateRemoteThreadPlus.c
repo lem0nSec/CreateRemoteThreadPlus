@@ -96,7 +96,6 @@ BOOL U32MessageBoxCreateRemoteThreadPlus(HANDLE hProcess, LPVOID funcAddress, DW
 	if (data = (PUSER32_LIB_DATA)LocalAlloc(LPTR, size))
 	{
 		RtlCopyMemory(&data->input, input, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType));
-		LocalFree(input);
 
 		if (remoteAllocation = VirtualAllocEx(hProcess, NULL, size, MEM_COMMIT, PAGE_READWRITE))
 		{
@@ -112,6 +111,7 @@ BOOL U32MessageBoxCreateRemoteThreadPlus(HANDLE hProcess, LPVOID funcAddress, DW
 					VirtualFreeEx(hProcess, funcAddress, funcSize, MEM_DECOMMIT);
 					VirtualFreeEx(hProcess, (LPVOID)input->text, lpTextSize, MEM_DECOMMIT);
 					VirtualFreeEx(hProcess, (LPVOID)input->title, lpCaptionSize, MEM_DECOMMIT);
+					LocalFree(input);
 					status = TRUE;
 				}
 			}
