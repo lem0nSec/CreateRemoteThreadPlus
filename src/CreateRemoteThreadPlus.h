@@ -1,7 +1,6 @@
 #pragma once
 
 #include <windows.h>
-#include <TlHelp32.h>
 #include <ntstatus.h>
 #include <stdio.h>
 
