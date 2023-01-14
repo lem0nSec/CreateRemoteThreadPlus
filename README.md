@@ -25,5 +25,5 @@ Standard .dll injection works right off the bath because the LoadLibrary API exp
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## The solution
+## The Solution
 This repository shows how to handle situations where CreateRemoteThread is used execute a thread function which expects multiple parameters. 
