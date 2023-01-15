@@ -26,7 +26,10 @@ Standard .dll injection works right off the bath because the LoadLibrary API exp
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## The Solution
-When the remote thread function needs more than one argument, then a data structure containing these arguments has to be passed as LPVOID lpParameter in CreateRemoteThread. 
+This code shows how to handle the aforementioned situation by doing the followings:
+
+1) Writing a data structure containing the parameters into the remote process. This is our LPVOID lpParameter.
+2) Write a \_\_stdcall instruction set into the remote process. This is out LPTHREAD_START_ROUTINE.
 
 
 ### Creating a data structure that holds parameters
@@ -100,6 +103,8 @@ MessageBoxA is manually declared as WINAPI ('#define __stdcall'). 0x414141414141
 
 ![Remote thread executes MessageBoxA](pictures/payload_execution.png)
 **Figure 2. Remote thread executes MessageBoxA**
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 ## References
