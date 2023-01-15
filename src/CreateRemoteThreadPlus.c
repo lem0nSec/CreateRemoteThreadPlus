@@ -6,7 +6,10 @@ DWORD WINAPI U32MessageBoxGenerateFunctionInstructions(PUSER32_LIB_DATA lpParame
 	lpParameter->output.outputStatus = ((PMESSAGEBOXA)0x4141414141414141)(lpParameter->input.hwnd, lpParameter->input.text, lpParameter->input.title, lpParameter->input.uType);
 	return STATUS_SUCCESS;
 }
-DWORD U32MessageBoxGenerateFunctionInstructions_End() { return 0; }
+DWORD U32MessageBoxGenerateFunctionInstructions_End()
+{
+	return 0;
+}
 #pragma optimize ("", on)
 
 PUSER32_LIB_INPUT_DATA U32MessageBoxCreateInputParameters(HANDLE hProcess, HWND inputHwnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
@@ -45,7 +48,7 @@ PUSER32_LIB_INPUT_DATA U32MessageBoxCreateInputParameters(HANDLE hProcess, HWND 
 
 LPVOID U32MessageBoxCreateRemoteFunction(HANDLE hProcess, LPCVOID buffer, DWORD bufferSize)
 {
-	PVOID address = GetProcAddress(GetModuleHandleW(L"user32.dll"), "MessageBoxA");
+	PVOID address = GetProcAddress(LoadLibraryW(L"user32.dll"), "MessageBoxA");
 	LPVOID functionAllocation = 0, tmpBuffer;
 
 	if (address == 0)
@@ -117,15 +120,17 @@ BOOL U32MessageBoxCreateRemoteThreadPlus(HANDLE hProcess, LPVOID funcAddress, DW
 				}
 			}
 		}
+
+		LocalFree(data);
+	
 	}
-	LocalFree(data);
+	
 	return status;
 }
 
 
 int wmain(int argc, wchar_t* argv[])
 {
-	LoadLibraryW(L"user32.dll");
 	DWORD processID = 0;
 	LPCVOID buffer = U32MessageBoxGenerateFunctionInstructions;
 	DWORD bufferSize = ((PBYTE)U32MessageBoxGenerateFunctionInstructions_End - (PBYTE)U32MessageBoxGenerateFunctionInstructions);
