@@ -89,7 +89,10 @@ DWORD WINAPI U32MessageBoxGenerateFunctionInstructions(PUSER32_LIB_DATA lpParame
 	lpParameter->output.outputStatus = ((PMESSAGEBOXA)0x4141414141414141)(lpParameter->input.hwnd, lpParameter->input.text, lpParameter->input.title, lpParameter->input.uType);
 	return STATUS_SUCCESS;
 }
-DWORD U32MessageBoxGenerateFunctionInstructions_End() { return 0; }
+DWORD U32MessageBoxGenerateFunctionInstructions_End()
+{
+	return 0; 
+}
 
 <snip>
 ```
