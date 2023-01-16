@@ -1,10 +1,10 @@
 # CreateRemoteThreadPlus
-**CreateRemoteThread: how to pass multiple lpParameters to the remote thread function without shellcode.**
+**CreateRemoteThread: how to pass multiple parameters to the remote thread function without shellcode.**
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## The Function
-As stated by the related MSDN page, the CreateRemoteThread API from kernel32.dll *creates a thread that runs in the virtual address space of another process.* This API is often used for process or shellcode injection purposes. Standard dll injection is perhaps the most common amongst these techniques. CreateRemoteThread can 'force' the remote process to load an arbitrary .dll by opening a new thread in it. The LoadLibrary address is passed to the API as LPTHREAD_START_ROUTINE (4th parameter), while a pointer to the string (.dll to be loaded) written in the remote process is passed as LPVOID (5th parameter).
+As stated by the related MSDN page, the CreateRemoteThread API from kernel32.dll *creates a thread that runs in the virtual address space of another process.* This API is often used for process or shellcode injection purposes. Standard dll injection is perhaps the most common amongst these techniques. CreateRemoteThread can 'force' the remote process to load an arbitrary .dll by opening a new thread in it. The LoadLibrary address is passed to the API as LPTHREAD_START_ROUTINE (4th parameter), while a pointer to the string (.dll to be loaded) written in the remote process is passed as 5th parameter.
 
 ```c
 HANDLE CreateRemoteThread(
@@ -21,7 +21,14 @@ HANDLE CreateRemoteThread(
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## The Problem
-Standard .dll injection works right off the bath because the LoadLibrary API expects one parameter only. As previously stated, the 'LPVOID lpParameter' allows for passing this single parameter to the remote thread function. But what if 'LPTHREAD_START_ROUTINE lpStartAddress' needs to be a pointer to a function which expects multiple parameters? What if the remote thread function is MessageBox for instance? (MessageBox expects four parameters).
+Standard .dll injection works right off the bath because the LoadLibrary API expects one parameter only. But what if the remote function expects multiple parameters? What if the function is MessageBox for instance? (MessageBox expects four parameters). I wanted to create this repository because some people on the Internet say that this is impossible.
+
+![](pictures/argument.png)
+**Figure 1. People's argument (1)**
+
+
+![](pictures/argument1.png)
+**Figure 2. People's argument (2)**
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,7 +36,7 @@ Standard .dll injection works right off the bath because the LoadLibrary API exp
 This code shows how to handle the aforementioned situation by doing the followings:
 
 1) Writing a data structure containing the parameters into the remote process. This is our LPVOID lpParameter.
-2) Write a \_\_stdcall instruction set into the remote process. This is out LPTHREAD_START_ROUTINE.
+2) Write a \_\_stdcall instruction set into the remote process (no shellcode). This is out LPTHREAD_START_ROUTINE.
 
 
 ### Creating a data structure that holds parameters
@@ -111,4 +118,6 @@ MessageBoxA is manually declared as WINAPI ('#define __stdcall'). 0x414141414141
 
 
 ## References
+* https://guidedhacking.com/threads/how-to-pass-multiple-arguments-with-createremotethread-to-injected-dll.15373/
+* https://stackoverflow.com/questions/25354393/passing-multiple-parameters-using-createremotethread-in-c-sharp
 * https://github.com/gentilkiwi/mimikatz
