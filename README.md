@@ -21,7 +21,7 @@ HANDLE CreateRemoteThread(
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## The Problem
-Standard .dll injection works because the LoadLibrary API expects one parameter only. But what if the remote function expects multiple parameters? What if the function is MessageBox for instance? (MessageBox expects four parameters). I wanted to create this repository because some people on the Internet say that this is impossible.
+Standard .dll injection works because the LoadLibrary API expects one parameter only. But what if the remote function expects multiple parameters? What if the function is MessageBox for instance? (MessageBox expects four parameters). I wanted to create this repository because some people on the Internet have said that passing more than one parameter to the remote function is impossible.
 
 ![](pictures/argument.png)
 **Figure 1. People's argument (1)**
