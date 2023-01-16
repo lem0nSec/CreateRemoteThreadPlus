@@ -40,7 +40,7 @@ This code shows how to handle the aforementioned situation by doing the followin
 
 
 ### Creating a data structure that holds parameters
-MessageBox expects a HWND as first parameter, the second and third parameters are pointers to constant strings (messagebox text and title), the fourth parameter is a UINT (content and behaviour of the messagebox). The data structure will be the following (the order of the values within the struct is irrelevant):
+MessageBox expects a HWND as first parameter, the second and third parameters are pointers to constant strings (messagebox text and title), the fourth parameter is a UINT (content and behaviour of the messagebox). The data structure will be the following:
 
 
 ```c
