@@ -60,7 +60,7 @@ HWND and UINT are integers, writing them into the struct is as simple as follows
 ```c
 <snip>
 
-iData = (PUSER32_LIB_INPUT_DATA)LocalAlloc(LPTR, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType)); // Allocate the struct
+iData = (PUSER32_LIB_INPUT_DATA)LocalAlloc(LPTR, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType) + sizeof(UINT)); // Allocate the struct
 iData->hwnd = inputHwnd;
 iData->uType = uType;
 
