@@ -36,7 +36,7 @@ Standard .dll injection works because the LoadLibrary API expects one parameter 
 This code shows how to handle the aforementioned situation by doing the followings:
 
 1) Writing a data structure containing the parameters into the remote process. This is our LPVOID lpParameter.
-2) Write a \_\_stdcall instruction set into the remote process (no shellcode). This is out LPTHREAD_START_ROUTINE.
+2) Writing a \_\_stdcall instruction set into the remote process (no shellcode). This is our LPTHREAD_START_ROUTINE.
 
 
 ### Creating a data structure that holds parameters
@@ -108,11 +108,11 @@ MessageBoxA is manually declared as WINAPI ('#define __stdcall'). 0x414141414141
 
 
 ![MessageBoxA instruction set](pictures/function_instruction_set.png)
-**Figure 1. MessageBoxA instruction set**
+**Figure 3. MessageBoxA instruction set**
 
 
 ![Remote thread executes MessageBoxA](pictures/payload_execution.png)
-**Figure 2. Remote thread executes MessageBoxA**
+**Figure 4. Remote thread executes MessageBoxA**
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
