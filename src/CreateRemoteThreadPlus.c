@@ -34,7 +34,7 @@ PUSER32_LIB_INPUT_DATA U32MessageBoxCreateInputParameters(HANDLE hProcess, HWND 
 			}
 		}
 
-		iData = (PUSER32_LIB_INPUT_DATA)LocalAlloc(LPTR, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType));
+		iData = (PUSER32_LIB_INPUT_DATA)LocalAlloc(LPTR, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType) + sizeof(UINT));
 		iData->hwnd = inputHwnd;
 		iData->uType = uType;
 		iData->text = (LPCSTR)lpTextAllocation;
@@ -93,14 +93,14 @@ BOOL U32MessageBoxCreateRemoteThreadPlus(HANDLE hProcess, LPVOID funcAddress, DW
 	BOOL status = FALSE;
 	HANDLE hThread;
 	PUSER32_LIB_DATA data;
-	DWORD size = FIELD_OFFSET(USER32_LIB_DATA, input.uType);
+	DWORD size = FIELD_OFFSET(USER32_LIB_DATA, input.uType) + sizeof(UINT);
 	LPVOID remoteAllocation;
 
 
 	if (data = (PUSER32_LIB_DATA)LocalAlloc(LPTR, size))
 	{
-		RtlCopyMemory(&data->input, input, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType));
-
+		RtlCopyMemory(&data->input, input, FIELD_OFFSET(USER32_LIB_INPUT_DATA, uType) + sizeof(UINT));
+		
 		if (remoteAllocation = VirtualAllocEx(hProcess, NULL, size, MEM_COMMIT, PAGE_READWRITE))
 		{
 			if (WriteProcessMemory(hProcess, remoteAllocation, (LPCVOID)data, size, NULL))
