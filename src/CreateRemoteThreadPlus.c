@@ -1,3 +1,11 @@
+/*
+* Author:	Angelo Frasca Caccia (lem0nSec_)
+* Date:		16/01/2023
+* Title:	CreateRemoteThreadPlus.exe
+* Website:	https://github.com/lem0nSec/CreateRemoteThreadPlus
+*/
+
+
 #include "CreateRemoteThreadPlus.h"
 
 #pragma optimize ("", off)
