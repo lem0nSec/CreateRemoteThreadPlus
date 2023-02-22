@@ -126,4 +126,4 @@ MessageBoxA is manually declared as WINAPI ('#define __stdcall'). 0x414141414141
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #### Notes
-Make sure to compile the code using the same compiler/linker options specified in this VisualStudio project. Otherwise the program will not work. I suggest cloning the repository.
+Make sure to compile the code using the same compiler/linker options specified in this VisualStudio project. I suggest cloning the repository.
