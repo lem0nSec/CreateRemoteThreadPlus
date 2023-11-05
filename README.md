@@ -94,7 +94,7 @@ The remote thread first has to execute instructions that populate the right regi
 DWORD WINAPI U32MessageBoxGenerateFunctionInstructions(PUSER32_LIB_DATA lpParameter)
 {
 	lpParameter->output.outputStatus = ((PMESSAGEBOXA)0x4141414141414141)(lpParameter->input.hwnd, lpParameter->input.text, lpParameter->input.title, lpParameter->input.uType);
-	return STATUS_SUCCESS;
+	return 0;
 }
 DWORD U32MessageBoxGenerateFunctionInstructions_End()
 {
