@@ -9,7 +9,6 @@
 #pragma once
 
 #include <windows.h>
-#include <ntstatus.h>
 #include <stdio.h>
 
 

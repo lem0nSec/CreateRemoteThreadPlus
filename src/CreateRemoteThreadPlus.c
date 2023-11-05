@@ -12,7 +12,7 @@
 DWORD WINAPI U32MessageBoxGenerateFunctionInstructions(PUSER32_LIB_DATA lpParameter)
 {
 	lpParameter->output.outputStatus = ((PMESSAGEBOXA)0x4141414141414141)(lpParameter->input.hwnd, lpParameter->input.text, lpParameter->input.title, lpParameter->input.uType);
-	return STATUS_SUCCESS;
+	return 0;
 }
 DWORD U32MessageBoxGenerateFunctionInstructions_End()
 {
@@ -22,22 +22,23 @@ DWORD U32MessageBoxGenerateFunctionInstructions_End()
 
 PUSER32_LIB_INPUT_DATA U32MessageBoxCreateInputParameters(HANDLE hProcess, HWND inputHwnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
-	LPVOID lpTextAllocation, lpCaptionAllocation;
-	PUSER32_LIB_INPUT_DATA iData;
+	LPVOID lpTextAllocation = 0;
+	LPVOID lpCaptionAllocation = 0;
+	PUSER32_LIB_INPUT_DATA iData = 0;
 	
 	if (lpTextAllocation = VirtualAllocEx(hProcess, NULL, strlen(lpText), MEM_COMMIT, PAGE_READWRITE))
 	{
 		if (!WriteProcessMemory(hProcess, lpTextAllocation, lpText, strlen(lpText), NULL))
 		{
-			VirtualFreeEx(hProcess, lpTextAllocation, strlen(lpText), MEM_DECOMMIT);
+			VirtualFreeEx(hProcess, lpTextAllocation, 0, MEM_RELEASE);
 			return 0;
 		}
 		if (lpCaptionAllocation = VirtualAllocEx(hProcess, NULL, strlen(lpCaption), MEM_COMMIT, PAGE_READWRITE))
 		{
 			if (!WriteProcessMemory(hProcess, lpCaptionAllocation, lpCaption, strlen(lpCaption), NULL))
 			{
-				VirtualFreeEx(hProcess, lpCaptionAllocation, strlen(lpCaption), MEM_DECOMMIT);
-				VirtualFreeEx(hProcess, lpTextAllocation, strlen(lpText), MEM_DECOMMIT);
+				VirtualFreeEx(hProcess, lpCaptionAllocation, 0, MEM_RELEASE);
+				VirtualFreeEx(hProcess, lpTextAllocation, 0, MEM_RELEASE);
 				return 0;
 			}
 		}
@@ -57,7 +58,8 @@ PUSER32_LIB_INPUT_DATA U32MessageBoxCreateInputParameters(HANDLE hProcess, HWND 
 LPVOID U32MessageBoxCreateRemoteFunction(HANDLE hProcess, LPCVOID buffer, DWORD bufferSize)
 {
 	PVOID address = GetProcAddress(LoadLibraryW(L"user32.dll"), "MessageBoxA");
-	LPVOID functionAllocation = 0, tmpBuffer;
+	LPVOID functionAllocation = 0;
+	LPVOID tmpBuffer = 0;
 
 	if (address == 0)
 	{
@@ -82,7 +84,7 @@ LPVOID U32MessageBoxCreateRemoteFunction(HANDLE hProcess, LPCVOID buffer, DWORD 
 		{
 			if (!WriteProcessMemory(hProcess, functionAllocation, tmpBuffer, bufferSize, NULL))
 			{
-				VirtualFreeEx(hProcess, functionAllocation, bufferSize, MEM_DECOMMIT);
+				VirtualFreeEx(hProcess, functionAllocation, 0, MEM_RELEASE);
 			}
 		}
 
@@ -99,11 +101,10 @@ LPVOID U32MessageBoxCreateRemoteFunction(HANDLE hProcess, LPCVOID buffer, DWORD 
 BOOL U32MessageBoxCreateRemoteThreadPlus(HANDLE hProcess, LPVOID funcAddress, DWORD funcSize, DWORD lpTextSize, DWORD lpCaptionSize, PUSER32_LIB_INPUT_DATA input)
 {
 	BOOL status = FALSE;
-	HANDLE hThread;
-	PUSER32_LIB_DATA data;
+	HANDLE hThread = 0;
+	PUSER32_LIB_DATA data = 0;
 	DWORD size = FIELD_OFFSET(USER32_LIB_DATA, input.uType) + sizeof(UINT);
-	LPVOID remoteAllocation;
-
+	LPVOID remoteAllocation = 0;
 
 	if (data = (PUSER32_LIB_DATA)LocalAlloc(LPTR, size))
 	{
@@ -118,22 +119,45 @@ BOOL U32MessageBoxCreateRemoteThreadPlus(HANDLE hProcess, LPVOID funcAddress, DW
 				if (hThread)
 				{
 					WaitForSingleObject(hThread, INFINITE);
-					CloseHandle(hThread);
-					VirtualFreeEx(hProcess, remoteAllocation, size, MEM_DECOMMIT);
-					VirtualFreeEx(hProcess, funcAddress, funcSize, MEM_DECOMMIT);
-					VirtualFreeEx(hProcess, (LPVOID)input->text, lpTextSize, MEM_DECOMMIT);
-					VirtualFreeEx(hProcess, (LPVOID)input->title, lpCaptionSize, MEM_DECOMMIT);
-					LocalFree(input);
 					status = TRUE;
 				}
+				goto cleanup;
+			}
+			else
+			{
+				goto cleanup;
 			}
 		}
+		else
+		{
+			goto cleanup;
+		}
+	}
 
+cleanup:
+	if (input != 0)
+	{
+		LocalFree(input);
+	}
+	if (hThread != 0)
+	{
+		CloseHandle(hThread);
+	}
+	if (data != 0)
+	{
 		LocalFree(data);
-	
+	}
+	if (remoteAllocation != 0)
+	{
+		VirtualFreeEx(hProcess, remoteAllocation, 0, MEM_RELEASE);
+	}
+	if (funcAddress != 0)
+	{
+		VirtualFreeEx(hProcess, funcAddress, 0, MEM_RELEASE);
 	}
 	
 	return status;
+
 }
 
 
@@ -141,12 +165,12 @@ int wmain(int argc, wchar_t* argv[])
 {
 	DWORD processID = 0;
 	LPCVOID buffer = U32MessageBoxGenerateFunctionInstructions;
-	DWORD bufferSize = ((PBYTE)U32MessageBoxGenerateFunctionInstructions_End - (PBYTE)U32MessageBoxGenerateFunctionInstructions);
-	LPVOID funcAddress, paramAddress;
-	PUSER32_LIB_INPUT_DATA iData;
-	USER32_LIB_OUTPUT_DATA oData;
-	PUSER32_LIB_DATA data;
-	HANDLE hProcess;
+	DWORD bufferSize = (DWORD)((PBYTE)U32MessageBoxGenerateFunctionInstructions_End - (PBYTE)U32MessageBoxGenerateFunctionInstructions);
+	LPVOID funcAddress = 0, paramAddress = 0;
+	PUSER32_LIB_INPUT_DATA iData = 0;
+	USER32_LIB_OUTPUT_DATA oData = { 0 };
+	PUSER32_LIB_DATA data = 0;
+	HANDLE hProcess = 0;
 	char text[] = "CreateRemoteThreadPlus", title[] = "Success!";
 
 
@@ -161,26 +185,40 @@ int wmain(int argc, wchar_t* argv[])
 				if (funcAddress != 0)
 				{
 					iData = U32MessageBoxCreateInputParameters(hProcess, NULL, text, title, MB_OK);
-					if (U32MessageBoxCreateRemoteThreadPlus(hProcess, funcAddress, bufferSize, strlen(text), strlen(title), iData) == TRUE)
+					if (iData != 0)
 					{
+						if (U32MessageBoxCreateRemoteThreadPlus(hProcess, funcAddress, bufferSize, (DWORD)strlen(text), (DWORD)strlen(title), iData) == TRUE)
+						{
+							CloseHandle(hProcess);
+							return 1;
+						}
+					}
+					else
+					{
+						wprintf(L"[-] Could not create input parameters inside the remote process.\n");
 						CloseHandle(hProcess);
-						return 1;
 					}
 				}
+				else
+				{
+					wprintf(L"[-] Could not create function inside the remote process.\n");
+					CloseHandle(hProcess);
+				}
+			}
+			else
+			{
+				wprintf(L"[-] Could not open process %d\n", processID);
 			}
 		}
 		else
 		{
-			goto help;
+			wprintf(L"Usage: %s {pid}\n", argv[0]);
 		}
 	}
 	else
 	{
-		goto help;
+		wprintf(L"Usage: %s {pid}\n", argv[0]);
 	}
-
-help:
-	wprintf(L"Usage: %s <pid>\n", argv[0]);
 
 	return 0;
 
