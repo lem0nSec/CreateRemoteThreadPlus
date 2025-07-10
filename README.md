@@ -41,7 +41,7 @@ This code shows how to handle the aforementioned situation by doing the followin
 - Writing a function code block into the remote process. The `CreateRemoteThread` api will receive a pointer to this function as `LPTHREAD_START_ROUTINE`.
 
 
-### Creating a data structure that holds parameters
+### Creating a Data Structure that holds Parameters
 MessageBox expects a HWND variable as first parameter, the second and third parameters are pointers to constant strings (messagebox text and caption), the fourth parameter is a UINT variable (content and behaviour of the messagebox). The data structure with MessageBoxA parameters will be the following:
 
 ```c
